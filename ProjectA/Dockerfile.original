@@ -1,0 +1,22 @@
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+
+ARG BUILDCONFIG=RELEASE
+ARG VERSION=1.0.0
+
+COPY ProjectA.csproj /build/
+COPY MessagingContracts/MessagingContracts.csproj MessagingContracts/
+
+RUN dotnet restore ./build/ProjectA.csproj
+
+COPY . ./build/
+WORKDIR /build/
+RUN dotnet publish ./ProjectA.csproj -c $BUILDCONFIG -o out /p:Version=$VERSION
+
+FROM base AS final
+WORKDIR /app
+
+COPY --from=build /build/out .
+
+ENTRYPOINT ["dotnet", "ProjectA.dll"]

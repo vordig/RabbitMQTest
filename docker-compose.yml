@@ -1,0 +1,69 @@
+version: '3.7'
+
+networks:
+  rabbit-mq-test:
+    name: rabbit-mq-test-network
+
+services:
+  project-a:
+    container_name: ProjectA
+    build:
+      context: .
+      dockerfile: ProjectA/Dockerfile
+    restart: always
+    ports:
+      - 7000:80
+    depends_on:
+      rabbit-mq:
+        condition: service_healthy
+      seq:
+        condition: service_started
+    networks:
+      - rabbit-mq-test
+
+  project-b:
+    container_name: ProjectB
+    build:
+      context: .
+      dockerfile: ProjectB/Dockerfile
+    restart: always
+    ports:
+      - 7001:80
+    depends_on:
+      - rabbit-mq
+      - seq
+    networks:
+      - rabbit-mq-test
+
+  rabbit-mq:
+    image: rabbitmq:3.11.7-management
+    container_name: Queue
+    hostname: project-queue
+    volumes:
+      - ./.containers/queue/data/:/var/lib/rabbitmq
+      - ./.containers/queue/log/:/var/log/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - 7010:15672
+    networks:
+      - rabbit-mq-test
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 20s
+      retries: 5
+
+  seq:
+    image: datalust/seq
+    container_name: Seq
+    volumes:
+      - ./.containers/seq/:/data
+    networks:
+      - rabbit-mq-test
+    ports:
+      - "7011:80"
+    environment:
+      - ACCEPT_EULA=Y
+    
