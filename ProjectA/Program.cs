@@ -38,7 +38,7 @@ static void RunApplication(string[] args)
     builder.Services.AddMassTransit(busConfigurator =>
     {
         busConfigurator.SetKebabCaseEndpointNameFormatter();
-        busConfigurator.AddConsumer<ProjectContractConsumer>();
+        busConfigurator.AddConsumer<ProjectAContractConsumer>();
         busConfigurator.UsingRabbitMq((context, configurator) =>
         {
             var settings = context.GetRequiredService<MessageBrokerSettings>();

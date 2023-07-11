@@ -1,8 +1,9 @@
 ﻿using MassTransit;
 using MessagingContracts;
 using MessagingContracts.Events.ProjectA;
+using MessagingContracts.Events.ProjectB;
 
-namespace ProjectA;
+namespace ProjectB;
 
 public static class Endpoints
 {
@@ -14,18 +15,18 @@ public static class Endpoints
 
     private static async Task<IResult> CreateEvent1(IPublishEndpoint bus, ILogger<Program> logger)
     {
-        var eventContract = new ProjectAEvent1(Guid.NewGuid());
-        var contract = ProjectBContract.NewContract(eventContract);
-        logger.LogInformation("ProjectA create a contract {ContractId} for ProjectB with a home event {EventId}", contract.Id, eventContract.Id);
+        var eventContract = new ProjectBEvent1(Guid.NewGuid());
+        var contract = ProjectAContract.NewContract(eventContract);
+        logger.LogInformation("ProjectB create a contract {ContractId} for ProjectA with a home event {EventId}", contract.Id, eventContract.Id);
         await bus.Publish(contract);
         return Results.Ok(contract);
     }
 
     private static async Task<IResult> CreateEvent2(IPublishEndpoint bus, ILogger<Program> logger)
     {
-        var eventContract = new ProjectAEvent2(Guid.NewGuid());
-        var contract = ProjectBContract.NewContract(eventContract);
-        logger.LogInformation("ProjectA create a contract {ContractId} for ProjectB with a home event {EventId}", contract.Id, eventContract.Id);
+        var eventContract = new ProjectBEvent2(Guid.NewGuid());
+        var contract = ProjectAContract.NewContract(eventContract);
+        logger.LogInformation("ProjectB create a contract {ContractId} for ProjectA with a home event {EventId}", contract.Id, eventContract.Id);
         await bus.Publish(contract);
         return Results.Ok(contract);
     }

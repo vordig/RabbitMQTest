@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace MessagingContracts;
+namespace MessagingContracts.Events;
 
 public abstract record EventBase<TEvent>(string Code)
 {
@@ -10,7 +10,7 @@ public abstract record EventBase<TEvent>(string Code)
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
-        var eventContract = JsonSerializer.Deserialize<TEvent>(eventDocument, options);
+        var eventContract = eventDocument.Deserialize<TEvent>(options);
         return eventContract is null ? throw new Exception() : eventContract;
     }
 }

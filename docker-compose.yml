@@ -30,8 +30,10 @@ services:
     ports:
       - 7001:80
     depends_on:
-      - rabbit-mq
-      - seq
+      rabbit-mq:
+        condition: service_healthy
+      seq:
+        condition: service_started
     networks:
       - rabbit-mq-test
 
