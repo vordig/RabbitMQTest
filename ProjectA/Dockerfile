@@ -4,7 +4,7 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 
-ARG BUILDCONFIG=RELEASE
+ARG BUILDCONFIG=DEBUG
 ARG VERSION=1.0.0
 
 COPY ["ProjectA/ProjectA.csproj", "ProjectA/"]
