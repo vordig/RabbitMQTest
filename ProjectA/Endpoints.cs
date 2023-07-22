@@ -15,8 +15,8 @@ public static class Endpoints
     private static async Task<IResult> CreateEvent1(IPublishEndpoint bus, ILogger<Program> logger)
     {
         var eventContract = new ProjectAEvent1(Guid.NewGuid());
-        var contract = ProjectBContract.NewContract(eventContract);
-        logger.LogInformation("ProjectA create a contract {ContractId} for ProjectB with a home event {EventId}", contract.Id, eventContract.Id);
+        var contract = ProjectContract.NewContract(eventContract);
+        logger.LogInformation("ProjectA create a contract {ContractId} with an event {EventId}", contract.Id, eventContract.Id);
         await bus.Publish(contract);
         return Results.Ok(contract);
     }
@@ -24,8 +24,8 @@ public static class Endpoints
     private static async Task<IResult> CreateEvent2(IPublishEndpoint bus, ILogger<Program> logger)
     {
         var eventContract = new ProjectAEvent2(Guid.NewGuid());
-        var contract = ProjectBContract.NewContract(eventContract);
-        logger.LogInformation("ProjectA create a contract {ContractId} for ProjectB with a home event {EventId}", contract.Id, eventContract.Id);
+        var contract = ProjectContract.NewContract(eventContract);
+        logger.LogInformation("ProjectA create a contract {ContractId} with an event {EventId}", contract.Id, eventContract.Id);
         await bus.Publish(contract);
         return Results.Ok(contract);
     }

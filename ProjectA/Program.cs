@@ -1,6 +1,9 @@
 ﻿using MassTransit;
+using MessagingContracts;
+using MessagingContracts.Events;
 using Microsoft.Extensions.Options;
 using ProjectA;
+using RabbitMQ.Client;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -37,8 +40,7 @@ static void RunApplication(string[] args)
 
     builder.Services.AddMassTransit(busConfigurator =>
     {
-        busConfigurator.SetKebabCaseEndpointNameFormatter();
-        busConfigurator.AddConsumer<ProjectAContractConsumer>();
+        busConfigurator.AddConsumer<ProjectContractConsumer>();
         busConfigurator.UsingRabbitMq((context, configurator) =>
         {
             var settings = context.GetRequiredService<MessageBrokerSettings>();
@@ -47,7 +49,30 @@ static void RunApplication(string[] args)
                 h.Username(settings.Username);
                 h.Password(settings.Password);
             });
-            configurator.ConfigureEndpoints(context);
+
+            configurator.Send<ProjectContract>(topologyConfigurator =>
+            {
+                topologyConfigurator.UseRoutingKeyFormatter(context => context.Message.Code);
+            });
+            configurator.Message<ProjectContract>(topologyConfigurator =>
+            {
+                topologyConfigurator.SetEntityName(Exchanges.ProjectAContracts);
+            });
+            configurator.Publish<ProjectContract>(topologyConfigurator =>
+            {
+                topologyConfigurator.ExchangeType = ExchangeType.Direct;
+            });
+
+            configurator.ReceiveEndpoint("project-a-queue", endpointConfigurator =>
+            {
+                endpointConfigurator.ConfigureConsumeTopology = false;
+                endpointConfigurator.Consumer<ProjectContractConsumer>(context);
+                endpointConfigurator.Bind(Exchanges.ProjectBContracts, bindingConfigurator =>
+                {
+                    bindingConfigurator.RoutingKey = EventCodes.ProjectBEvent1;
+                    bindingConfigurator.ExchangeType = ExchangeType.Direct;
+                });
+            });
         });
     });
 

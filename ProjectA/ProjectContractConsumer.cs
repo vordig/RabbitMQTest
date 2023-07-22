@@ -6,16 +6,16 @@ using System.Text.Json;
 
 namespace ProjectA;
 
-public class ProjectAContractConsumer : IConsumer<ProjectAContract>
+public class ProjectContractConsumer : IConsumer<ProjectContract>
 {
-    private readonly ILogger<ProjectAContractConsumer> _logger;
+    private readonly ILogger<ProjectContractConsumer> _logger;
 
-    public ProjectAContractConsumer(ILogger<ProjectAContractConsumer> logger)
+    public ProjectContractConsumer(ILogger<ProjectContractConsumer> logger)
     {
         _logger = logger;
     }
 
-    public Task Consume(ConsumeContext<ProjectAContract> context)
+    public Task Consume(ConsumeContext<ProjectContract> context)
     {
         var contract = context.Message;
         _logger.LogInformation("ProjectA recieve a contract {Id}", contract.Id);

@@ -6,16 +6,16 @@ using MessagingContracts.Events.ProjectB;
 
 namespace ProjectB;
 
-public class ProjectBContractConsumer : IConsumer<ProjectBContract>
+public class ProjectContractConsumer : IConsumer<ProjectContract>
 {
-    private readonly ILogger<ProjectBContractConsumer> _logger;
+    private readonly ILogger<ProjectContractConsumer> _logger;
 
-    public ProjectBContractConsumer(ILogger<ProjectBContractConsumer> logger)
+    public ProjectContractConsumer(ILogger<ProjectContractConsumer> logger)
     {
         _logger = logger;
     }
 
-    public Task Consume(ConsumeContext<ProjectBContract> context)
+    public Task Consume(ConsumeContext<ProjectContract> context)
     {
         var contract = context.Message;
         _logger.LogInformation("ProjectB recieve a contract {Id}", contract.Id);
@@ -30,7 +30,7 @@ public class ProjectBContractConsumer : IConsumer<ProjectBContract>
                 HandleProjectAEvent2(contract.EventDocument);
                 break;
             default:
-                _logger.LogInformation("ProjectA is not interested in {EventCode} event from contract {Id}", code, contract.Id);
+                _logger.LogInformation("ProjectB is not interested in {EventCode} event from contract {Id}", code, contract.Id);
                 break;
         }
         return Task.CompletedTask;

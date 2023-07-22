@@ -2,7 +2,7 @@
 
 namespace MessagingContracts.Events;
 
-public abstract record EventBase<TEvent>(string Code)
+public abstract record EventBase<TEvent>(string Code) : IEvent
 {
     public static TEvent FromDocument(JsonDocument eventDocument)
     {

@@ -1,6 +1,9 @@
 ﻿using MassTransit;
+using MessagingContracts;
+using MessagingContracts.Events;
 using Microsoft.Extensions.Options;
 using ProjectB;
+using RabbitMQ.Client;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -37,8 +40,7 @@ static void RunApplication(string[] args)
 
     builder.Services.AddMassTransit(busConfigurator =>
     {
-        busConfigurator.SetKebabCaseEndpointNameFormatter();
-        busConfigurator.AddConsumer<ProjectBContractConsumer>();
+        busConfigurator.AddConsumer<ProjectContractConsumer>();
         busConfigurator.UsingRabbitMq((context, configurator) =>
         {
             var settings = context.GetRequiredService<MessageBrokerSettings>();
@@ -47,7 +49,35 @@ static void RunApplication(string[] args)
                 h.Username(settings.Username);
                 h.Password(settings.Password);
             });
-            configurator.ConfigureEndpoints(context);
+
+            configurator.Send<ProjectContract>(topologyConfigurator =>
+            {
+                topologyConfigurator.UseRoutingKeyFormatter(context => context.Message.Code);
+            });
+            configurator.Message<ProjectContract>(topologyConfigurator =>
+            {
+                topologyConfigurator.SetEntityName(Exchanges.ProjectBContracts);
+            });
+            configurator.Publish<ProjectContract>(topologyConfigurator =>
+            {
+                topologyConfigurator.ExchangeType = ExchangeType.Direct;
+            });
+
+            configurator.ReceiveEndpoint("project-b-queue", endpointConfigurator =>
+            {
+                endpointConfigurator.ConfigureConsumeTopology = false;
+                endpointConfigurator.Consumer<ProjectContractConsumer>(context);
+                endpointConfigurator.Bind(Exchanges.ProjectAContracts, bindingConfigurator =>
+                {
+                    bindingConfigurator.RoutingKey = EventCodes.ProjectAEvent1;
+                    bindingConfigurator.ExchangeType = ExchangeType.Direct;
+                });
+                endpointConfigurator.Bind(Exchanges.ProjectAContracts, bindingConfigurator =>
+                {
+                    bindingConfigurator.RoutingKey = EventCodes.ProjectAEvent2;
+                    bindingConfigurator.ExchangeType = ExchangeType.Direct;
+                });
+            });
         });
     });
 
