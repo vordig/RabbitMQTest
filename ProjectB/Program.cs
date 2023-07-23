@@ -56,7 +56,7 @@ static void RunApplication(string[] args)
             });
             configurator.Message<ProjectContract>(topologyConfigurator =>
             {
-                topologyConfigurator.SetEntityName(Exchanges.ProjectBContracts);
+                topologyConfigurator.SetEntityName(Topics.ProjectB);
             });
             configurator.Publish<ProjectContract>(topologyConfigurator =>
             {
@@ -67,12 +67,12 @@ static void RunApplication(string[] args)
             {
                 endpointConfigurator.ConfigureConsumeTopology = false;
                 endpointConfigurator.Consumer<ProjectContractConsumer>(context);
-                endpointConfigurator.Bind(Exchanges.ProjectAContracts, bindingConfigurator =>
+                endpointConfigurator.Bind(Topics.ProjectA, bindingConfigurator =>
                 {
                     bindingConfigurator.RoutingKey = ProjectAEvents.Codes.Event1;
                     bindingConfigurator.ExchangeType = ExchangeType.Direct;
                 });
-                endpointConfigurator.Bind(Exchanges.ProjectAContracts, bindingConfigurator =>
+                endpointConfigurator.Bind(Topics.ProjectA, bindingConfigurator =>
                 {
                     bindingConfigurator.RoutingKey = ProjectAEvents.Codes.Event2;
                     bindingConfigurator.ExchangeType = ExchangeType.Direct;
