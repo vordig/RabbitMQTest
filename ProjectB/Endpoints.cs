@@ -1,6 +1,6 @@
 ﻿using MassTransit;
 using MessagingContracts;
-using MessagingContracts.Events.ProjectB;
+using MessagingContracts.Events;
 
 namespace ProjectB;
 
@@ -14,7 +14,7 @@ public static class Endpoints
 
     private static async Task<IResult> CreateEvent1(IPublishEndpoint bus, ILogger<Program> logger)
     {
-        var eventContract = new ProjectBEvent1(Guid.NewGuid());
+        var eventContract = new ProjectBEvents.Event1(Guid.NewGuid());
         var contract = ProjectContract.NewContract(eventContract);
         logger.LogInformation("ProjectB create a contract {ContractId} with an event {EventId}", contract.Id, eventContract.Id);
         await bus.Publish(contract);
@@ -23,7 +23,7 @@ public static class Endpoints
 
     private static async Task<IResult> CreateEvent2(IPublishEndpoint bus, ILogger<Program> logger)
     {
-        var eventContract = new ProjectBEvent2(Guid.NewGuid());
+        var eventContract = new ProjectBEvents.Event2(Guid.NewGuid());
         var contract = ProjectContract.NewContract(eventContract);
         logger.LogInformation("ProjectB create a contract {ContractId} with an event {EventId}", contract.Id, eventContract.Id);
         await bus.Publish(contract);

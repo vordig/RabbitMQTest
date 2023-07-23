@@ -69,7 +69,7 @@ static void RunApplication(string[] args)
                 endpointConfigurator.Consumer<ProjectContractConsumer>(context);
                 endpointConfigurator.Bind(Exchanges.ProjectBContracts, bindingConfigurator =>
                 {
-                    bindingConfigurator.RoutingKey = EventCodes.ProjectBEvent1;
+                    bindingConfigurator.RoutingKey = ProjectBEvents.Codes.Event1;
                     bindingConfigurator.ExchangeType = ExchangeType.Direct;
                 });
             });

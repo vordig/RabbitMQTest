@@ -1,7 +1,6 @@
 ﻿using MassTransit;
 using MessagingContracts;
 using MessagingContracts.Events;
-using MessagingContracts.Events.ProjectB;
 using System.Text.Json;
 
 namespace ProjectA;
@@ -23,7 +22,7 @@ public class ProjectContractConsumer : IConsumer<ProjectContract>
         var code = eventDocument.GetProperty("code").GetString();
         switch (code)
         {
-            case EventCodes.ProjectBEvent1:
+            case ProjectBEvents.Codes.Event1:
                 HandleProjectBEvent1(contract.EventDocument);
                 break;
             default:
@@ -35,7 +34,7 @@ public class ProjectContractConsumer : IConsumer<ProjectContract>
 
     private void HandleProjectBEvent1(JsonDocument eventDocument)
     {
-        var eventContract = ProjectBEvent1.FromDocument(eventDocument);
+        var eventContract = ProjectBEvents.Event1.FromDocument(eventDocument);
         _logger.LogInformation("ProjectA handle a ProjectBEvent1 event {Id}", eventContract.Id);
     }
 }
